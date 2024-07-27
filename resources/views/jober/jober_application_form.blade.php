@@ -684,7 +684,7 @@
                                 <td>
                                     <div class="fBox col pb-15">
                                         <div class="w-100">
-                                            <input type="password" name="password" class="form-control"
+                                            <input type="password" name="password" class="form-control" id="password"
                                                 placeholder="パスワード" required>
                                             @error('password')
                                                 <div class="alert alert-danger">{{ $message }}</div>
@@ -692,10 +692,13 @@
                                             <span class="required-message">必須です。</span>
                                         </div>
                                         <div class="w-100">
-                                            <input type="password" name="password_confirmation" class="form-control"
+                                            <input type="password" name="password_confirmation" class="form-control" id="password_confirmation"
                                                 placeholder="パスワード (確認用)" required>
-                                            <span class="required-message">必須です。</span>
+                                            <span class="required-message">必須です。</span>                                            
                                         </div>
+                                    </div>
+                                    <div id="password-mismatch" class="alert alert-danger" style="display: none;">
+                                        パスワードが一致しません！
                                     </div>
                                     ※8文字以上使用
                                 </td>
@@ -778,6 +781,22 @@
         </div>
     </div>
     <script>
+
+        $(document).ready(function() {
+            function checkPasswordMatch() {
+                var password = $("#password").val();
+                var confirmPassword = $("#password_confirmation").val();
+
+                if (password !== confirmPassword) {
+                    $("#password-mismatch").show();
+                } else {
+                    $("#password-mismatch").hide();
+                }
+            }
+
+            $("#password_confirmation").on("keyup", checkPasswordMatch);
+        });        
+
         $.getJSON('/api/prefectureList/', function(data) {
             $.each(data, function(index, data2) {
                 $('#ken').append($('<option>').text(data2.ken_name).val(data2.ken_id));
