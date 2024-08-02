@@ -169,7 +169,8 @@
             .p-step-bar-container {
                 display: block !important;
             }
-            .registerTable td .tit{
+
+            .registerTable td .tit {
                 padding: 0
             }
         }
@@ -596,7 +597,7 @@
                                     <div class="fBox date-font">
                                         <select name="birth_year" tabindex="1" class="form-control">
                                             <?php for($i=1960; $i<=2010;$i++){ ?>
-                                            <option {{$i=='1980'?"selected":''}}>{{ $i }}</option>
+                                            <option {{ $i == '1980' ? 'selected' : '' }}>{{ $i }}</option>
                                             <?php } ?>
                                         </select><span class="tit">年</span>
                                         <select name="birth_month" tabindex="1" class="form-control">
@@ -692,9 +693,9 @@
                                             <span class="required-message">必須です。</span>
                                         </div>
                                         <div class="w-100">
-                                            <input type="password" name="password_confirmation" class="form-control" id="password_confirmation"
-                                                placeholder="パスワード (確認用)" required>
-                                            <span class="required-message">必須です。</span>                                            
+                                            <input type="password" name="password_confirmation" class="form-control"
+                                                id="password_confirmation" placeholder="パスワード (確認用)" required>
+                                            <span class="required-message">必須です。</span>
                                         </div>
                                     </div>
                                     <div id="password-mismatch" class="alert alert-danger" style="display: none;">
@@ -704,7 +705,7 @@
                                 </td>
                             </tr>
                         @endif
-                        <tr class="{{Auth::check() ? "":"sp_hidden"}}">
+                        <tr class="{{ Auth::check() ? '' : 'sp_hidden' }}">
                             <th class="interview">面接可能日時<span class="option">任意</span></th>
                             <td>
                                 <p class="m-15">※可能日時を入力いただく欄ですので、確定日時ではありません。</p>
@@ -753,7 +754,7 @@
                             <td colspan="2">
                                 <label class="text-title"><input type="checkbox"
                                         name="email_receive">メールマガジンの配信を許可する</label>
-                                <label class="text-title"><input type="checkbox" name="auto_login"
+                                <label class="text-title"><input type="checkbox" name="auto_login" onchange="handleAutoLogin(this)"
                                         required>次回から自動ログインする</label>
                                 <div class="text-title"><input type="checkbox" name="agree" required>
                                     <a href="/privacy" style="color:#0074c1;text-decoration: underline;"
@@ -776,12 +777,11 @@
                     <button type="button" class="btn-submit action-button button-type_blue"><i
                             class="fa-regular fa-circle-check" style="color: #ffffff;"></i>&nbsp;同意して応募を完了する</button>
                 </div>
-                <input type="hidden" id="authcheck" name="authcheck" value={{Auth::check()}}>
+                <input type="hidden" id="authcheck" name="authcheck" value={{ Auth::check() }}>
             </form>
         </div>
     </div>
     <script>
-
         $(document).ready(function() {
             function checkPasswordMatch() {
                 var password = $("#password").val();
@@ -795,7 +795,7 @@
             }
 
             $("#password_confirmation").on("keyup", checkPasswordMatch);
-        });        
+        });
 
         $.getJSON('/api/prefectureList/', function(data) {
             $.each(data, function(index, data2) {
@@ -1039,6 +1039,14 @@
                 $(this).prop('checked', true);
             });
         });
+
+        function handleAutoLogin(checkbox) {
+            if (checkbox.checked) {
+                document.cookie = "auto_login=1; max-age=86400; path=/";
+            } else {
+                document.cookie = "auto_login=; max-age=0; path=/";
+            }
+        }
     </script>
 
 @endsection

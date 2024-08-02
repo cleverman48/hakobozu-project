@@ -498,7 +498,10 @@ class HomeController extends Controller
         $user->verification_code = sha1(time());
         $user->is_verified = true;
         $user->save();
-        Auth::login($user);
+        if ($request->cookie('auto_login') == '1') {
+            Auth::login($user);
+            Auth::setRememberDuration(60 * 24); // 24 hours in minutes
+        }
 
         if ($user != null) {
             //creating profile,sending email, show message

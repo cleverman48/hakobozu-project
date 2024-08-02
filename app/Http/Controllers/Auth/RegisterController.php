@@ -78,7 +78,7 @@ class RegisterController extends Controller
      */
     public function register(Request $request){
         try {          
-            $validator = \Validator::make($request->all(), [
+            $validator = Validator::make($request->all(), [
                 'zip' => ['required'],
                 'ken_id' => ['required'],
                 'city_id' => ['required'],
