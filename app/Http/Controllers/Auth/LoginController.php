@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
@@ -42,5 +43,11 @@ class LoginController extends Controller
     public function credentials(Request $request)
     {
         return array_merge($request->only($this->username(),'password'),['is_verified' => 1]);
+    }
+    protected function authenticated(Request $request, $user)
+    {
+        if ($request->has('remember')) {
+            Auth::setRememberDuration(60 * 24); // 24 hours in minutes
+        }
     }
 }
