@@ -297,7 +297,7 @@
                                         @endif
                                         <div class="mt-1">
                                             <p class="special-title">{{ \App\Http\Controllers\HomeController::trip_text($job['post_title'], 42) }}...</p>
-                                            <p>
+                                            <p class = "badges-container">
                                                 @isset($job['working_place'])
                                                     @foreach($job['working_place'] as $key => $place)
                                                         <a href="{{ route('home.area_search',$place['area_id']) }}">
