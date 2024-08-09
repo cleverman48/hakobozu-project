@@ -70,7 +70,11 @@
                                                                     $areas = json_decode($job['post_working_place'], true);
                                                                     ?>
                                                                     @foreach($areas as $area)
+                                                                        @if($area == null || !isset($area))
+                                                                        <a href="{{ route('home.area_search',-111) }}"><span class="badge badge-orange">{{ $area }}</span></a>
+                                                                        @else
                                                                         <a href="{{ route('home.area_search',$area) }}"><span class="badge badge-orange">{{ $area }}</span></a>
+                                                                        @endif
                                                                     @endforeach
                                                                     <?php
                                                                     $category = json_decode($job['post_category'], true);

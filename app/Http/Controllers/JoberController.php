@@ -237,9 +237,9 @@ class JoberController extends Controller
         }
     }
 
-    public function job_list()
+    public function job_list($jober_id)
     {
-        $jober_id = $this->get_jober_id();
+        // $jober_id = $this->get_jober_id();
         $jobs = Job::where('jober_id', $jober_id)->whereIn('post_status', [0, 1, 2])->orderBy('post_expired', 'DESC')->paginate(3);
         return view('jober.jober_job_list')->with(compact('jober_id', 'jobs'));
     }
@@ -325,18 +325,18 @@ class JoberController extends Controller
         return view('jober.jober_bid_list')->with(compact('bids'));
     }
 
-    //    public function job_detail($job_id){
-    //        $job = Job::where('id', $job_id)->first();
-    //        $job_prs = Job_pr::where('job_id',$job_id)->get();
-    //        $working_place = Job_working_place::where('job_id', $job->id)->get();
-    //        $working_places = [];
-    //        foreach ($working_place as $key => $place) {
-    //            $working_places[$key]['area'] = $place->ken_name . $place->city_name;
-    //            $working_places[$key]['prefecture'] = $place->ken_name;
-    //            $job->working_place = $working_places;
-    //        }
-    //        return view('jober.jober_job_detail')->with(compact('job', 'job_prs'));
-    //    }
+    // public function job_detail($job_id){
+    //     $job = Job::where('id', $job_id)->first();
+    //     $job_prs = Job_pr::where('job_id',$job_id)->get();
+    //     $working_place = Job_working_place::where('job_id', $job->id)->get();
+    //     $working_places = [];
+    //     foreach ($working_place as $key => $place) {
+    //         $working_places[$key]['area'] = $place->ken_name . $place->city_name;
+    //         $working_places[$key]['prefecture'] = $place->ken_name;
+    //         $job->working_place = $working_places;
+    //     }
+    //     return view('jober.jober_job_detail')->with(compact('job', 'job_prs'));
+    // }
 
     public function hire(Request $request)
     {
