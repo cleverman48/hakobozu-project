@@ -89,7 +89,7 @@ class HomeController extends Controller
         return view('front.index')->with(compact('articles', 'wp_blogs', 'new_jobs', 'featured_jobs', 'notifications', 'prefecture', 'categories', 'specials', 'structuredDataFaq'));
     }
 
-    public function search(Request $request)
+    /* public function search(Request $request)
     {
         $prefecture = Address::select('ken_id', 'ken_name')->groupBy('ken_id', 'ken_name')->orderBy('ken_id')->get();
         $ken_search = Address::select('ken_id', 'ken_name')->where('ken_id', $request->prefecture)->first();
@@ -143,8 +143,71 @@ class HomeController extends Controller
             }
         }
         return view('front.search_result')->with(compact('jobs', 'prefecture', 'categories', 'category_search_list', 'ken_search'));
-    }   
+    }  */  
 
+    public function search(Request $request) {
+        // Retrieve prefectures
+        $prefecture = Address::select('ken_id', 'ken_name')
+            ->groupBy('ken_id', 'ken_name')
+            ->orderBy('ken_id')
+            ->get();
+    
+        // Retrieve selected prefecture details
+        $ken_search = Address::select('ken_id', 'ken_name')
+            ->where('ken_id', $request->prefecture)
+            ->first();
+    
+        // Retrieve all job categories
+        $categories = Job_kind::all();
+        $category_search_list = $request->category;
+    
+        // Define the columns to select
+        $jobSelector = [
+            'jobs.id', 'jobs.jober_id', 'jobs.post_img', 'post_title', 'post_category',
+            'jobs.post_expired', 'jobs.updated_at', 'jobs.content_updated_at', 'post_other',
+            'post_benefit', 'post_payment_text', 'post_is_payment_more', 'post_payment_max_text',
+            'post_payment', 'post_working_time', 'jober_profiles.company_img', 'jober_profiles.company_name'
+        ];
+    
+        // Build the query for jobs
+        $jobs = Job::select($jobSelector)
+            ->leftJoin('job_working_places', 'jobs.id', '=', 'job_working_places.job_id')
+            ->leftJoin('jober_profiles', 'jobs.jober_id', '=', 'jober_profiles.jober_id')
+            ->when($request->prefecture, function ($query) use ($request) {
+                $query->where('job_working_places.ken_id', $request->prefecture);
+            })
+            ->when($category_search_list, function ($query) use ($category_search_list) {
+                $query->where('post_category', 'like', '%' . $category_search_list . '%');
+            })
+            ->where('post_status', 1)
+            ->orderBy('jobs.content_updated_at', 'DESC')
+            ->groupBy($jobSelector) // Group by all selected columns
+            ->paginate(15)
+            ->appends(request()->input());
+    
+        // Retrieve working places
+        $working_place = $this->get_working_place();
+    
+        // Process each job to add additional data
+        foreach ($jobs as $job) {
+            $job->displayDaysAgo = $this->getDisplayDaysAgo($job->content_updated_at);
+            $working_places = []; // Initialize outside the inner loop
+    
+            foreach ($working_place as $place) {
+                if ($job->id === $place->job_id) {
+                    $working_places[] = [
+                        'area_name' => $place->ken_name . $place->city_name,
+                        'area_id' => $place->city_id ?? $place->ken_id,
+                    ];
+                }
+            }
+    
+            $job->working_place = $working_places;
+        }
+    
+        // Return the view with the data
+        return view('front.search_result')->with(compact('jobs', 'prefecture', 'categories', 'category_search_list', 'ken_search'));
+    }
     public function keyword_search(Request $request)
     {
         $keyword = $request->keyword;
