@@ -126,7 +126,7 @@ Route::middleware(['auth','jober'])->group( function(){
     Route::get('/jober/job_stop/{job_id}', [App\Http\Controllers\JoberController::class, 'job_stop'])->name('jober.job_stop');
     Route::get('/jober/job_tempory_stop/{job_id}', [App\Http\Controllers\JoberController::class, 'job_tempory_stop'])->name('jober.job_tempory_stop');
 
-    Route::get('/jober/job_list', [App\Http\Controllers\JoberController::class, 'job_list'])->name('jober.job_list');
+    Route::get('/jober/jobList/{id}', [App\Http\Controllers\JoberController::class, 'job_list'])->name('jober.job_list');
     Route::get('/jober/job_delete/{id}', [App\Http\Controllers\JoberController::class, 'job_delete'])->name('jober.job_delete');
 
     Route::get('/jober/bid_list', [App\Http\Controllers\JoberController::class, 'bid_list'])->name('jober.bid_list');

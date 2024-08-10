@@ -282,7 +282,7 @@
                                 <p class="paragraphBox"><a href="{!! $jober_profile['company_url'] !!}" target="_blank" rel="noopener noreferrer nofollow">{!! $jober_profile['company_url'] !!}</a></p>
                                 @endisset
                                 <div class="buttonArea paragraphBox">
-                                    <a href="/jobList/{{ $jober_id }}" class="action-button button-type_white"><i class="fa-solid fa-table-cells-large" style="color: #333333;"></i>&nbsp;この企業の求人一覧を見る</a>
+                                    <a href="/jober/jobList/{{ $jober_id }}" class="action-button button-type_white"><i class="fa-solid fa-table-cells-large" style="color: #333333;"></i>&nbsp;この企業の求人一覧を見る</a>
                                 </div>
                             </section>
                         </div>
