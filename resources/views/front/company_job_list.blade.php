@@ -5,7 +5,11 @@
             <ul>
                 <li><a href="/">ホーム</a></li>
                 @if (isset($isJobList))
-                <li>{{ $jobs[0]['company_name'] }}の求人一覧</li>
+                    @if (isset($jobs) &&  count($jobs) > 0) 
+                        <li>{{ $jobs[0]['company_name'] }}の求人一覧</li>
+                    @else
+                        <li>見せる資料がありません。</li>
+                    @endif
                 @else
                 <li>お仕事検索</li>
                 @endif
@@ -18,8 +22,13 @@
                 <div class="tableWork">
                     <section class="itemBlock">
                         <div class="infoHead">
-                            <p class="logo"><img src="{{ asset('images/jober_profile') }}/{{ $jober_profile['company_img'] }}" alt="{{ $jober_profile['company_name'] }}"></p>
-                            <h2 class="company-title">{{ $jober_profile['company_name'] }}</h2>
+                            @if(isset($jober_profile) && $jober_profile != null)
+                                <p class="logo"><img src="{{ asset('images/jober_profile') }}/{{ $jober_profile['company_img'] }}" alt="{{ $jober_profile['company_name'] }}"></p>
+                                <h2 class="company-title">{{ $jober_profile['company_name'] }}</h2>
+                            @else
+                                <p class="logo"></p>
+                                <h2 class="company-title"></h2>
+                            @endif
                         </div>
                         @isset($jober_profile['company_province'])
                             <h3>本社所在地</h3>
