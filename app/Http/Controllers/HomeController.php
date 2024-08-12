@@ -442,7 +442,7 @@ class HomeController extends Controller
         return view('front.search_result')->with(compact('jobs', 'prefecture', 'categories'));
     }
 
-    public function jobList($joberId)
+    /* public function jobList($joberId)
     {
         $prefecture = Address::select('ken_id', 'ken_name')->groupBy('ken_id', 'ken_name')->orderBy('ken_id')->get();
         $categories = Job_kind::all();
@@ -493,8 +493,75 @@ class HomeController extends Controller
         }
         $isJobList = true;
         return view('front.company_job_list')->with(compact('jobs', 'jober_profile', 'prefecture', 'categories', 'isJobList'));
+    } */
+    public function jobList($joberId) {
+        // Fetch prefectures
+        $prefecture = Address::select('ken_id', 'ken_name')
+            ->groupBy('ken_id', 'ken_name')
+            ->orderBy('ken_id')
+            ->get();
+    
+        // Fetch job categories
+        $categories = Job_kind::all();
+    
+        // Define the job selector
+        $jobSelector = [
+            'jobs.id', 
+            'jobs.jober_id', 
+            'jobs.post_img', 
+            'post_title', 
+            'post_category', 
+            'jobs.post_expired', 
+            'jobs.updated_at', 
+            'jobs.content_updated_at', 
+            'post_other', 
+            'post_benefit', 
+            'post_payment_text', 
+            'post_is_payment_more', 
+            'post_payment_max_text', 
+            'post_payment', 
+            'post_working_time', 
+            'jober_profiles.company_img', 
+            'jober_profiles.company_name', 
+            'jober_profiles.company_url',
+        ];
+        
+        // Fetch jobs with pagination
+        $jobs = Job::select($jobSelector)
+            ->leftJoin('job_working_places', 'jobs.id', '=', 'job_working_places.job_id')
+            ->leftJoin('jober_profiles', 'jobs.jober_id', '=', 'jober_profiles.jober_id')
+            ->where('jobs.jober_id', $joberId)
+            ->where('post_status', 1)
+            ->orderBy('jobs.content_updated_at', 'DESC')
+            ->paginate(20)
+            ->appends(request()->input());
+    
+        // Check if jobs exist and fetch the jober profile
+        if ($jobs->isNotEmpty()) {
+            $jober_profile = Jober_profile::where('jober_id', $jobs[0]->jober_id)->first();
+        } else {
+            $jober_profile = null; // Handle case where no jobs are found
+        }
+    
+        // Fetch working places
+        $working_place = $this->get_working_place();
+    
+        // Process each job to add display days ago and working places
+        foreach ($jobs as $job) {
+            $job->displayDaysAgo = $this->getDisplayDaysAgo($job->content_updated_at);
+            $working_places = [];
+            foreach ($working_place as $key => $place) {
+                if ($job->id === $place->job_id) {
+                    $working_places[$key]['area_name'] = $place->ken_name . $place->city_name;
+                    $working_places[$key]['area_id'] = $place->city_id ?? $place->ken_id;
+                    $job->working_place = $working_places;
+                }
+            }
+        }
+    
+        $isJobList = true; // Flag to indicate job list is available
+        return view('front.company_job_list')->with(compact('jobs', 'jober_profile', 'prefecture', 'categories', 'isJobList'));
     }
-
     public function jobAppForm($job_id)
     {
         $job = Job::where('id', $job_id)->first();
